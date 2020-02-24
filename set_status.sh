@@ -57,3 +57,5 @@ for (( i=0; i < $len; i++)); do
     exit
   fi
 done
+
+curl -s -S -X POST -d "token=$SLACK_TOKEN" --data-urlencode "profile={\"status_text\": \"\", \"status_emoji\": \"\"}" https://slack.com/api/users.profile.set
