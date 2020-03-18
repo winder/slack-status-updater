@@ -16,12 +16,14 @@ the emoji and message at index 1 will be applied.
 - network - network SSID or IP address.
 - emoji   - status emoji to apply for the network.
 - message - status text to apply for the network.
+- script  - if the message is an empty string, generate a message with the script.
 
 ### Example configuration
 ```
 network=("1.23.45.67"          "Series of Tubes"     "Business Town"  "Starbucks WiFi")
 emoji=(  ":house_with_garden:" ":house_with_garden:" ":office:"       ":coffee:")
 message=("Working at home"     "Working at home"     "At the office"  "Bucks.")
+script="date"
 ```
 
 # Running the script

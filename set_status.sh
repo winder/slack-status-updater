@@ -16,9 +16,11 @@
 # network - network SSID or IP address.
 # emoji   - status emoji to apply for the network.
 # message - status text to apply for the network.
+# script  - if the message is an empty line, generate a message with the script.
 network=("1.23.45.67"          "Series of Tubes"     "Business Town"  "Starbucks WiFi")
 emoji=(  ":house_with_garden:" ":house_with_garden:" ":office:"       ":coffee:")
 message=("Working at home"     "Working at home"     "At the office"  "Bucks.")
+script="date"
 
 # --------------------------------------------------------------------------- #
 if [ $# -eq 1 ]; then
@@ -50,12 +52,22 @@ else
   exit 1
 fi
 
+MESSAGE=""
+
 # Loop through networks looking for a match
 for (( i=0; i < $len; i++)); do
   if [ "$ssid" == "${network[$i]}" -o "$ip" == "${network[$i]}" ]; then
-    curl -s -S -X POST -d "token=$SLACK_TOKEN" --data-urlencode "profile={\"status_text\": \"${message[$i]}\", \"status_emoji\": \"${emoji[$i]}\"}" https://slack.com/api/users.profile.set
+    MESSAGE=${message[$i]}
+    if [ "$MESSAGE" == "" -a "$script" != "" ]; then
+      MESSAGE=$(eval $script)
+    fi
+
+    curl -s -S -X POST -d "token=$SLACK_TOKEN" --data-urlencode "profile={\"status_text\": \"$MESSAGE\", \"status_emoji\": \"${emoji[$i]}\"}" https://slack.com/api/users.profile.set
     exit
   fi
 done
 
-curl -s -S -X POST -d "token=$SLACK_TOKEN" --data-urlencode "profile={\"status_text\": \"\", \"status_emoji\": \"\"}" https://slack.com/api/users.profile.set
+if [ "$script" != "" ]; then
+  MESSAGE=$(eval $script)
+fi
+curl -s -S -X POST -d "token=$SLACK_TOKEN" --data-urlencode "profile={\"status_text\": \"$MESSAGE\", \"status_emoji\": \"\"}" https://slack.com/api/users.profile.set
